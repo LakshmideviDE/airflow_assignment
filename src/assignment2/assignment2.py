@@ -18,7 +18,7 @@ with DAG (
         task_id='first_task',
         bash_command="echo hello world"
     )
-task1
+task1 
 
 
 
