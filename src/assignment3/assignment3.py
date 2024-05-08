@@ -20,6 +20,6 @@ dag= DAG(
 task1=PythonOperator(
         task_id="first_id",
         python_callable=greet,
-        dag=dag,
+        dag=dag, 
     )
 task1
