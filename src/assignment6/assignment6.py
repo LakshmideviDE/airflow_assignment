@@ -1,26 +1,25 @@
+from airflow.sensors.filesystem import FileSensor
 from airflow import DAG
-from airflow.providers.http.sensors.http import HttpSensor
 from datetime import datetime, timedelta
 
 default_args = {
-    "owner": "lakshmi",
-    "email_on_failure": False,
-    "email_on_retry": False,
-    "email": "admin@localhost.com",
-    "retries": 1,
-    "retry_delay": timedelta(minutes=5)
+    'owner': 'airflow',
+    'retries': 1,
+    'retry_delay': timedelta(minutes=3),
 }
-with DAG("forex_data_pipeline_v01",
-         start_date=datetime(2024, 5, 1),
-         schedule_interval="@daily",
-         default_args=default_args,
-         catchup=False
+
+with DAG(
+        default_args=default_args,
+        dag_id="sensor_demo",
+        start_date=datetime(2024, 5, 8),
+        catchup=False,
+        schedule_interval='@daily'  # @daily is called presets,
 ) as dag:
-    is_forex_available = HttpSensor(
-        task_id="is_forex_rate_available",
-        http_conn_id="forex_api",
-        endpoint="marclamberti/f45f872dea4dfd3eaa015a4a1af4b39b",
-        response_check=lambda response: "rates" in response.text,
-        poke_interval=5,
-        timeout=20
+    wait_for_file = FileSensor(
+        task_id="wait_for_file",
+        fs_conn_id='wait_for_file',  # Assuming this connection ID is properly configured
+        filepath='C:\Users\Lakshmidevi\Downloads\employee_1 - Sheet1.csv',  # Make sure this path is correct
+        mode='reschedule',
+        poke_interval=30
     )
+
